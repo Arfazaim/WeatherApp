@@ -1,5 +1,18 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+// nuxt.config.ts
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
-  devtools: { enabled: true }
+  future: {
+    compatibilityVersion: 4,
+  },
+  modules: ['@nuxtjs/tailwindcss', '@nuxt/icon'],
+  runtimeConfig: {
+    public: {
+      weatherApiKey: process.env.NUXT_PUBLIC_WEATHER_API_KEY
+    }
+  },
+  postcss: {
+    plugins: {
+      '@tailwindcss/postcss': {},
+    },
+  },
+  compatibilityDate: '2026-01-23'
 })
