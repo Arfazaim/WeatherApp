@@ -1,17 +1,6 @@
-@import "tailwindcss";
-
-@theme {
-  --font-family-sans: 'Outfit', sans-serif;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 body {
-  /* Reset margin dan set background default */
   margin: 0;
-  background-color: #0f172a;
-  color: white;
+  font-family: 'Inter', sans-serif;
 }
-
-/* Scrollbar halus agar tidak merusak estetika glassmorphism */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
