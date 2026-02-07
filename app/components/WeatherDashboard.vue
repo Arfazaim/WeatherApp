@@ -173,8 +173,8 @@ const days = ref(getNext7Days());
               </defs>
             </svg>
             <div class="hours">
-              <span v-for="h in hours" :key="h">{{ h }}</span>
-            </div>
+  <span v-for="h in hours" :key="h">{{ h }}</span>
+</div>
           </div>
 
         </section>
