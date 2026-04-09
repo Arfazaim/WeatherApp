@@ -1,4 +1,3 @@
-// nuxt.config.ts
 export default defineNuxtConfig({
   // Mode Nuxt 4
   future: {
@@ -6,8 +5,9 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    '@nuxtjs/tailwindcss',
-    '@nuxt/icon' // Opsional, jika kamu ingin icon dari modul nuxt
+    // Opsional, jika kamu ingin icon dari modul nuxt
+    '@nuxt/icon',
+    '@nuxt/ui'
   ],
 
   // Path CSS yang benar (mengarah ke app/assets/css/tailwind.css)

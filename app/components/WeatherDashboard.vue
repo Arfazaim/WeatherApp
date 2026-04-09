@@ -1,44 +1,40 @@
 <script setup>
 // --- KONFIGURASI API ---
-const apiKey = '49ec4dd2219678b027f91a13c323b469'; // Ganti dengan API Key OpenWeatherMap kamu
+const apiKey = '49ec4dd2219678b027f91a13c323b469'; // MASUKKAN API KEY KAMU DISINI
 const city = ref('Jakarta');
 const searchInput = ref('');
 
 // --- STATE DATA ---
-// Default data (Mockup) agar tampilan tidak rusak saat loading/error
 const weather = ref({
   name: 'Jakarta',
-  main: { temp: 25 },
-  weather: [{ main: 'Sunny', description: 'Cerah' }],
-  sys: { country: 'ID' }
+  main: { temp: 33, feels_like: 41, humidity: 73, pressure: 1014 },
+  weather: [{ main: 'Sunny', description: 'Sebagian cerah' }],
+  wind: { speed: 10 },
+  sys: { country: 'ID' },
+  visibility: 6000
 });
 
 // --- FETCH DATA (Real-time) ---
-// Kita bungkus dalam try-catch agar aman
 const fetchWeather = async () => {
-  if (!apiKey || apiKey === 'MASUKKAN_API_KEY_DISINI') return; // Pakai data dummy jika tidak ada key
+  if (!apiKey) return; 
   
   try {
     const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&units=metric&appid=${apiKey}`
+      `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&units=metric&appid=${apiKey}&lang=id`
     );
     const data = await response.json();
     if (data.cod === 200) {
       weather.value = data;
-    } else {
-      console.warn('Kota tidak ditemukan');
-    }
+    } 
   } catch (e) {
     console.error('Gagal mengambil data cuaca');
   }
 };
 
-// Panggil saat pertama kali load
 onMounted(() => {
   fetchWeather();
 });
 
-// Handle Search
 const handleSearch = () => {
   if (searchInput.value.trim()) {
     city.value = searchInput.value;
@@ -47,39 +43,52 @@ const handleSearch = () => {
   }
 };
 
-// Data Dummy untuk List (Karena API gratis terbatas Current Weather)
-const getNext7Days = () => {
+// --- DATA DUMMY GENERATORS (Sesuai Referensi) ---
+
+// 1. Daily Forecast (Horizontal)
+const getNext10Days = () => {
   const result = [];
   const today = new Date();
+  const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
   
-  // Array nama hari dalam Bahasa Indonesia
-  const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-  // Array nama bulan
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 8; i++) {
     const nextDate = new Date(today);
     nextDate.setDate(today.getDate() + i);
-
-    const dayName = dayNames[nextDate.getDay()];
-    const dateNum = nextDate.getDate();
-    const monthName = monthNames[nextDate.getMonth()];
-
-    // Generate suhu acak (karena API gratis terbatas data harian)
-    // Nanti bisa diganti real data jika punya API Key berbayar
-    const randomTemp = Math.floor(Math.random() * (32 - 24 + 1)) + 24; 
-
     result.push({
-      name: dayName,           // Contoh: Senin
-      fullDate: `${dateNum} ${monthName}`, // Contoh: 29 Jan
-      temp: `${randomTemp}°`
+      day: i === 0 ? 'Hari Ini' : dayNames[nextDate.getDay()],
+      date: nextDate.getDate(),
+      icon: ['☀️','⛅','🌧️','⛈️'][Math.floor(Math.random()*4)],
+      max: Math.floor(Math.random() * (34 - 30) + 30),
+      min: Math.floor(Math.random() * (28 - 25) + 25)
     });
   }
   return result;
 };
+const dailyForecast = ref(getNext10Days());
 
-// Panggil fungsinya
-const days = ref(getNext7Days());
+// 2. Hourly Forecast (Chart Data)
+const getHourlyData = () => {
+  const hours = [];
+  const startHour = new Date().getHours();
+  for(let i=0; i<8; i++) {
+    let h = (startHour + (i*3)) % 24;
+    hours.push({
+      time: h < 10 ? `0${h}:00` : `${h}:00`,
+      temp: Math.floor(Math.random() * (33 - 27) + 27),
+      icon: ['🌙','☀️','⛅','☁️'][Math.floor(Math.random()*4)]
+    });
+  }
+  return hours;
+};
+const hourlyForecast = ref(getHourlyData());
+
+// 3. Suggestions Data
+const suggestions = [
+  { title: 'Payung', status: 'Tidak perlu', icon: '☂️', bg: 'bg-blue-500/20' },
+  { title: 'Luar Ruang', status: 'Baik', icon: '🏃', bg: 'bg-green-500/20' },
+  { title: 'Pakaian', status: 'Kaos tipis', icon: '👕', bg: 'bg-purple-500/20' },
+  { title: 'Indeks UV', status: 'Sedang', icon: '☀️', bg: 'bg-orange-500/20' }
+];
 </script>
 
 <template>
@@ -89,314 +98,352 @@ const days = ref(getNext7Days());
       <aside class="sidebar">
         <div class="logo">☁️</div>
         <nav>
-          <span>🏠</span>
+          <span class="active">🏠</span>
           <span>📍</span>
-          <span>📊</span>
+          <span>📅</span>
           <span>⚙️</span>
         </nav>
+        <div class="user-avatar">👤</div>
       </aside>
 
       <main class="main">
-
+        
         <header class="topbar">
-          <input
-            v-model="searchInput"
-            @keyup.enter="handleSearch"
-            type="text"
-            placeholder="Search city..."
-          />
-          <div class="user">👤</div>
+          <div class="location-info">
+            <h2 class="city-name">{{ weather.name }}, {{ weather.sys.country }}</h2>
+            <p class="date-info">{{ new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' }) }}</p>
+          </div>
+          <div class="search-box">
+            <input
+              v-model="searchInput"
+              @keyup.enter="handleSearch"
+              type="text"
+              placeholder="Cari kota..."
+            />
+            <span class="search-icon">🔍</span>
+          </div>
         </header>
 
-        <section class="grid">
+        <section class="grid-layout">
 
-          <div class="card current">
-            <h4>Current Stat</h4>
-            <h2>{{ weather.name }}, {{ weather.sys.country }}</h2>
-
-            <div class="temp">{{ Math.round(weather.main.temp) }}°</div>
-
-            <p class="capitalize">{{ weather.weather[0].description }}</p>
-
-            <div class="mini">
-              <span>Min {{ Math.round(weather.main.temp - 2) }}°</span>
-              <span>Max {{ Math.round(weather.main.temp + 2) }}°</span>
+          <div class="card current-weather">
+            <div class="weather-main">
+              <div class="weather-icon-large">
+                {{ weather.main.temp > 30 ? '☀️' : (weather.main.temp > 25 ? '⛅' : '🌧️') }}
+              </div>
+              <div class="temp-info">
+                <div class="main-temp">{{ Math.round(weather.main.temp) }}°C</div>
+                <div class="desc">{{ weather.weather[0].description }}</div>
+                <div class="feels-like">Terasa seperti {{ Math.round(weather.main.feels_like) }}°</div>
+              </div>
             </div>
-          </div>
-
-          <div class="card map">
-            <iframe
-              width="100%"
-              height="100%"
-              frameborder="0"
-              style="border:0; filter: contrast(1.1) saturate(1.2);"
-              :src="`https://maps.google.com/maps?q=${city}&t=&z=13&ie=UTF8&iwloc=&output=embed`"
-              allowfullscreen
-            ></iframe>
-          </div>
-
-          <div class="card popular">
-            <h4>Popular Cities</h4>
-            <ul>
-              <li>Canada — Snow</li>
-              <li>China — Rain</li>
-              <li>Norway — Cloudy</li>
-              <li>Singapore — Sunny</li>
-            </ul>
-          </div>
-
-          <div class="card week">
-            <h4>7 Hari Kedepan</h4>
-            <div class="days">
-              <div v-for="day in days" :key="day.name" class="day">
-                <div class="day-info">
-                  <span class="day-name">{{ day.name }}</span>
-                  <span class="day-date">{{ day.fullDate }}</span>
-                </div>
-                <span class="day-temp">{{ day.temp }}</span>
+            
+            <div class="weather-details">
+              <div class="detail-item">
+                <span class="label">Angin</span>
+                <span class="value">{{ weather.wind.speed }} km/j</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Lembap</span>
+                <span class="value">{{ weather.main.humidity }}%</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Jarak Pandang</span>
+                <span class="value">{{ weather.visibility / 1000 }} km</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Tekanan</span>
+                <span class="value">{{ weather.main.pressure }} mb</span>
               </div>
             </div>
           </div>
 
-          <div class="card chart">
-            <h4>Forecast</h4>
-            <svg viewBox="0 0 400 120" preserveAspectRatio="none">
-              <path
-                d="M0 70 C50 40,100 90,150 70 C200 50,250 30,300 50 C350 70,380 40,400 50 V120 H0 Z"
-                fill="url(#grad)"
-              />
-              <defs>
-                <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#7dd3fc" />
-                  <stop offset="100%" stop-color="#0284c7" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div class="hours">
-  <span v-for="h in hours" :key="h">{{ h }}</span>
-</div>
+          <div class="card map-card">
+            <div class="map-overlay">
+              <span>Buka Peta 🗺️</span>
+            </div>
+            <iframe
+              width="100%"
+              height="100%"
+              frameborder="0"
+              style="border:0; filter: contrast(1.2) opacity(0.7);"
+              :src="`https://maps.google.com/maps?q=$?q=${city}&t=p&z=10&ie=UTF8&iwloc=&output=embed`"
+              allowfullscreen
+            ></iframe>
+          </div>
+
+          <div class="card sun-card">
+            <h4>Matahari / Bulan</h4>
+            <div class="sun-graphic">
+              <div class="arc">
+                <div class="sun-position">☀️</div>
+              </div>
+              <div class="sun-times">
+                <span>Terbit<br>05:55</span>
+                <span>Terbenam<br>17:43</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="daily-wrapper">
+            <h4>Prakiraan 8 Hari</h4>
+            <div class="daily-scroll">
+              <div v-for="(day, idx) in dailyForecast" :key="idx" class="daily-item" :class="{ 'active': idx === 0 }">
+                <span class="d-day">{{ day.day }}</span>
+                <span class="d-date">{{ day.date }}</span>
+                <span class="d-icon">{{ day.icon }}</span>
+                <div class="d-temps">
+                  <span class="max">{{ day.max }}°</span>
+                  <span class="min">{{ day.min }}°</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card chart-card">
+            <div class="chart-header">
+              <h4>Grafik Temperatur</h4>
+              <span>Ringkasan Hari Ini</span>
+            </div>
+            
+            <div class="chart-container">
+              <svg viewBox="0 0 500 150" preserveAspectRatio="none" class="chart-svg">
+                <defs>
+                  <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(255, 165, 0, 0.5)" />
+                    <stop offset="100%" stop-color="rgba(255, 165, 0, 0)" />
+                  </linearGradient>
+                </defs>
+                <path d="M0,100 C50,80 100,120 150,90 C200,60 250,40 300,70 C350,100 400,60 450,80 C480,90 500,100 500,150 L0,150 Z" fill="url(#chartGrad)" />
+                <path d="M0,100 C50,80 100,120 150,90 C200,60 250,40 300,70 C350,100 400,60 450,80 C480,90 500,100" fill="none" stroke="#FFA500" stroke-width="3" />
+              </svg>
+              
+              <div class="chart-labels">
+                <div v-for="(h, idx) in hourlyForecast" :key="idx" class="chart-point" :style="{ left: (idx * 12.5) + '%' }">
+                  <span class="cp-temp">{{ h.temp }}°</span>
+                  <span class="cp-icon">{{ h.icon }}</span>
+                  <span class="cp-time">{{ h.time }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card suggestions-card">
+            <h4>Saran hari ini</h4>
+            <div class="suggestions-grid">
+              <div v-for="item in suggestions" :key="item.title" class="sug-item">
+                <div class="sug-icon">{{ item.icon }}</div>
+                <div class="sug-info">
+                  <span class="sug-title">{{ item.title }}</span>
+                  <span class="sug-status">{{ item.status }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="more-link">Lihat selengkapnya ></div>
           </div>
 
         </section>
       </main>
-
     </div>
   </div>
 </template>
 
 <style scoped>
-/* BACKGROUND UTAMA */
+/* --- RESET & LAYOUT --- */
 .app-container {
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  /* Warna Background Deep Blue sesuai referensi */
+  background: #1e3a8a; 
+  background: linear-gradient(135deg, #1e3a8a, #172554);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: white;
   display: flex;
-  overflow: hidden; /* Hilangkan scrollbar browser */
-  font-family: 'Inter', sans-serif;
+  overflow: hidden;
 }
 
-/* GLASS PANEL (SEKARANG FULL SCREEN) */
 .glass {
   width: 100%;
   height: 100%;
-  /* Hapus border radius agar full mentok layar */
-  border-radius: 0; 
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: none; /* Hapus border pinggir */
   display: flex;
-  box-shadow: none; /* Hapus shadow karena sudah full screen */
 }
 
-/* SIDEBAR */
+/* --- SIDEBAR --- */
 .sidebar {
-  width: 90px; /* Sedikit diperlebar agar ikon lega */
-  background: rgba(255, 255, 255, 0.05);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  width: 70px;
+  background: rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 0;
-  gap: 50px;
-  color: white;
+  padding: 20px 0;
+  gap: 40px;
   z-index: 10;
 }
+.logo { font-size: 24px; margin-bottom: 20px; }
+.sidebar nav { display: flex; flex-direction: column; gap: 30px; }
+.sidebar nav span { font-size: 20px; opacity: 0.5; cursor: pointer; transition: 0.3s; }
+.sidebar nav span:hover, .sidebar nav span.active { opacity: 1; transform: scale(1.1); }
+.user-avatar { margin-top: auto; font-size: 24px; opacity: 0.8; cursor: pointer; }
 
-.logo { font-size: 28px; margin-bottom: 10px; }
-.sidebar nav { display: flex; flex-direction: column; gap: 35px; font-size: 24px; cursor: pointer; }
-.sidebar nav span:hover { transform: scale(1.1); transition: transform 0.2s; opacity: 1; }
-.sidebar nav span { opacity: 0.7; }
-
-/* MAIN CONTENT AREA */
+/* --- MAIN CONTENT --- */
 .main {
   flex: 1;
-  padding: 30px 40px; /* Padding isi konten */
+  padding: 20px 40px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 30px;
-  color: white;
-  overflow-y: auto; /* Scroll hanya di bagian konten jika layar terlalu kecil */
-  height: 100vh;
+  gap: 20px;
 }
 
-/* TOPBAR */
-.topbar { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center;
-  min-height: 50px; 
-}
+/* --- TOPBAR --- */
+.topbar { display: flex; justify-content: space-between; align-items: flex-end; }
+.city-name { font-size: 18px; font-weight: 600; margin: 0; }
+.date-info { font-size: 13px; opacity: 0.7; margin: 0; }
 
-.topbar input {
-  width: 400px; /* Lebih lebar */
-  padding: 14px 24px;
-  border-radius: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  outline: none;
-  background: rgba(0, 0, 0, 0.1); /* Sedikit lebih gelap agar kontras */
-  color: white;
-  font-size: 15px;
-  backdrop-filter: blur(5px);
-  transition: all 0.3s ease;
-}
-
-.topbar input:focus { 
-  background: rgba(0, 0, 0, 0.2); 
-  width: 420px;
-  border-color: rgba(255,255,255,0.3);
-}
-.topbar input::placeholder { color: rgba(255, 255, 255, 0.6); }
-
-.user {
-  width: 45px; height: 45px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.2);
-}
-
-/* GRID LAYOUT (RESPONSIF) */
-.grid {
-  flex: 1;
-  display: grid;
-  /* Grid 3 Kolom */
-  grid-template-columns: 350px 1fr 300px; 
-  /* Grid 2 Baris: Atas fix, Bawah sisa space */
-  grid-template-rows: minmax(300px, 1.5fr) 1fr; 
-  gap: 25px;
-  height: 100%; /* Paksa grid memenuhi sisa tinggi */
-}
-
-/* CARD STYLING */
-.card {
-  background: rgba(255, 255, 255, 0.07);
-  border-radius: 24px;
-  padding: 30px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex; 
-  flex-direction: column; 
-  justify-content: space-between;
-  backdrop-filter: blur(5px);
-  transition: transform 0.2s;
-}
-
-.card:hover {
+.search-box {
   background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255,255,255,0.2);
-}
-
-/* CURRENT WEATHER CARD */
-.current .temp { font-size: 80px; font-weight: 700; margin: 10px 0; letter-spacing: -2px; line-height: 1; }
-.current h2 { font-size: 32px; font-weight: 600; margin-bottom: 5px; }
-.current h4 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; }
-.mini { display: flex; gap: 20px; font-size: 16px; opacity: 0.8; margin-top: 10px; }
-
-/* MAP CARD (Update bagian ini) */
-.map {
-  /* Hapus padding agar map full memenuhi kotak */
-  padding: 0 !important;
-  overflow: hidden; /* Agar sudut rounded tetap terlihat */
-  position: relative;
-  background: rgba(0,0,0,0.2);
-}
-
-.map iframe {
-  width: 100%;
-  height: 100%;
-  border-radius: 24px; /* Samakan dengan radius card */
-  display: block;
-}
-
-/* POPULAR CITIES */
-.popular ul { list-style: none; padding: 0; margin-top: 20px; display: flex; flex-direction: column; gap: 15px; }
-.popular li { 
-  display: flex; justify-content: space-between;
-  padding-bottom: 15px; 
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
-  font-size: 15px; 
-}
-.popular li:last-child { border: none; }
-
-/* WEEKDAYS UPDATE */
-.days { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 12px; 
-  margin-top: 20px; 
-  overflow-y: auto;
-  /* Sembunyikan scrollbar agar rapi */
-  scrollbar-width: none; 
-}
-
-.day {
-  display: flex; 
-  justify-content: space-between;
-  align-items: center; /* Rata tengah vertikal */
-  background: rgba(255, 255, 255, 0.05);
-  padding: 12px 15px;
-  border-radius: 12px;
-  transition: background 0.2s;
-}
-
-.day:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* Container untuk Nama Hari & Tanggal */
-.day-info {
+  border-radius: 20px;
+  padding: 8px 15px;
   display: flex;
-  flex-direction: column; /* Susun ke bawah */
-  gap: 2px;
+  align-items: center;
+  width: 300px;
+}
+.search-box input {
+  background: transparent; border: none; outline: none; color: white; width: 100%;
+}
+.search-box input::placeholder { color: rgba(255,255,255,0.5); }
+
+/* --- GRID LAYOUT --- */
+.grid-layout {
+  display: grid;
+  /* Kolom: Current(1.5), Map(1), Sun(1) */
+  grid-template-columns: 1.5fr 1fr 1fr;
+  /* Baris: Top, Middle (Daily), Bottom (Chart/Sugg) */
+  grid-template-rows: auto auto 1fr; 
+  gap: 20px;
+  padding-bottom: 20px;
 }
 
-.day-name {
-  font-size: 15px;
-  font-weight: 500;
-  color: white;
+/* Common Card Style */
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
 }
 
-.day-date {
-  font-size: 12px;
-  opacity: 0.6; /* Sedikit transparan agar tidak balapan sama nama hari */
+/* 1. CURRENT WEATHER */
+.current-weather {
+  grid-column: 1 / 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.1));
+}
+.weather-main { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
+.weather-icon-large { font-size: 64px; filter: drop-shadow(0 0 10px rgba(255,255,0,0.3)); }
+.main-temp { font-size: 56px; font-weight: bold; line-height: 1; }
+.desc { font-size: 18px; font-weight: 500; text-transform: capitalize; }
+.feels-like { font-size: 14px; opacity: 0.7; }
+
+.weather-details { display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+.detail-item { display: flex; flex-direction: column; gap: 4px; }
+.detail-item .label { font-size: 12px; opacity: 0.6; }
+.detail-item .value { font-size: 14px; font-weight: 600; }
+
+/* 2. MAP CARD */
+.map-card {
+  grid-column: 2 / 3;
+  padding: 0 !important;
+  overflow: hidden;
+  position: relative;
+}
+.map-overlay {
+  position: absolute; bottom: 10px; right: 10px;
+  background: rgba(0,0,0,0.6); padding: 5px 10px;
+  border-radius: 10px; font-size: 12px; z-index: 5; pointer-events: none;
 }
 
-.day-temp {
-  font-size: 16px;
-  font-weight: bold;
+/* 3. SUN CARD */
+.sun-card {
+  grid-column: 3 / 4;
+  display: flex; flex-direction: column;
 }
-
-/* CHART */
-.chart { grid-column: span 2; position: relative; }
-.hours { display: flex; justify-content: space-between; font-size: 13px; opacity: 0.7; margin-top: auto; padding-top: 10px; }
-
-/* SVG Chart agar responsive */
-.chart svg { 
-  width: 100%; 
-  height: 100%; 
-  max-height: 200px;
-  filter: drop-shadow(0px 10px 10px rgba(37, 99, 235, 0.3));
+.sun-card h4 { font-size: 14px; margin: 0 0 10px 0; opacity: 0.7; }
+.sun-graphic {
+  flex: 1; position: relative; display: flex; flex-direction: column; justify-content: center;
 }
+.arc {
+  width: 100%; height: 80px;
+  border-top: 2px dashed rgba(255,255,255,0.3);
+  border-radius: 50% 50% 0 0;
+  position: relative;
+}
+.sun-position {
+  position: absolute; top: -12px; left: 30%; /* Simulasi posisi */
+  font-size: 20px;
+  filter: drop-shadow(0 0 5px yellow);
+}
+.sun-times { display: flex; justify-content: space-between; font-size: 11px; margin-top: 10px; opacity: 0.8; }
+
+/* 4. DAILY FORECAST (Middle Row) */
+.daily-wrapper {
+  grid-column: 1 / -1; /* Full Width */
+}
+.daily-wrapper h4 { font-size: 14px; margin-bottom: 10px; opacity: 0.7; text-transform: uppercase; }
+.daily-scroll {
+  display: flex; gap: 15px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;
+}
+.daily-item {
+  background: rgba(255,255,255,0.05);
+  min-width: 100px;
+  padding: 15px;
+  border-radius: 15px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer; transition: 0.2s;
+}
+.daily-item:hover, .daily-item.active { background: rgba(255,255,255,0.15); transform: translateY(-3px); }
+.d-day { font-size: 14px; font-weight: 600; }
+.d-date { font-size: 12px; opacity: 0.6; }
+.d-icon { font-size: 24px; }
+.d-temps { font-size: 13px; display: flex; gap: 8px; }
+.d-temps .max { font-weight: bold; }
+.d-temps .min { opacity: 0.6; }
+
+/* 5. CHART CARD (Bottom Left) */
+.chart-card {
+  grid-column: 1 / 3;
+  display: flex; flex-direction: column;
+}
+.chart-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; }
+.chart-container { position: relative; height: 150px; flex: 1; }
+.chart-svg { width: 100%; height: 100%; }
+.chart-labels { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.chart-point {
+  position: absolute; bottom: 0;
+  display: flex; flex-direction: column; align-items: center;
+  transform: translateX(-50%);
+}
+.cp-temp { font-size: 12px; font-weight: bold; margin-bottom: 80px; /* Offset dari bawah */ }
+.cp-icon { position: absolute; bottom: 50px; font-size: 16px; }
+.cp-time { position: absolute; bottom: -5px; font-size: 11px; opacity: 0.6; }
+
+/* 6. SUGGESTIONS (Bottom Right) */
+.suggestions-card {
+  grid-column: 3 / 4;
+  display: flex; flex-direction: column; gap: 15px;
+}
+.suggestions-card h4 { font-size: 14px; margin: 0; opacity: 0.7; }
+.suggestions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex: 1; }
+.sug-item {
+  background: rgba(255,255,255,0.03);
+  border-radius: 15px;
+  padding: 10px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.sug-icon { font-size: 20px; }
+.sug-title { font-size: 11px; opacity: 0.6; }
+.sug-status { font-size: 13px; font-weight: 600; }
+.more-link { font-size: 12px; text-align: right; opacity: 0.6; cursor: pointer; margin-top: auto; }
+
 </style>
