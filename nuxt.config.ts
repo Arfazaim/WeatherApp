@@ -3,11 +3,13 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 4,
   },
-
+  
+srcDir: 'app',
   modules: [
     // Opsional, jika kamu ingin icon dari modul nuxt
     '@nuxt/icon',
-    '@nuxt/ui'
+    '@nuxt/ui',
+    '@vercel/analytics'
   ],
 
   // Path CSS yang benar (mengarah ke app/assets/css/tailwind.css)
