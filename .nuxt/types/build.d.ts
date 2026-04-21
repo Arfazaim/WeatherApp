@@ -14,6 +14,8 @@ declare module "#build/plugins.server.mjs";
 declare module "#build/test-component-wrapper.mjs";
 declare module "#build/color-mode-options.mjs";
 declare module "#build/vercel-analytics.client.ts";
+declare module "#build/devtools/settings.mjs";
+declare module "#build/runtime.vue-devtools-client.aQgCTP0wr3LIhpxZX9U7Pd3o1MqQQ9YJY7K0e9JymOc.js";
 declare module "#build/pages.mjs";
 declare module "#build/router.options.mjs";
 declare module "#build/unhead-options.mjs";
