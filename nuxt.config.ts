@@ -1,24 +1,49 @@
 export default defineNuxtConfig({
-  // Mode Nuxt 4
   future: {
     compatibilityVersion: 4,
   },
-  
-srcDir: 'app',
+
+  srcDir: 'app',
+
   modules: [
-    // Opsional, jika kamu ingin icon dari modul nuxt
     '@nuxt/icon',
     '@nuxt/ui',
     '@vercel/analytics'
   ],
 
-  // Path CSS yang benar (mengarah ke app/assets/css/tailwind.css)
   css: [
-    '~/assets/css/tailwind.css'
+    '~/assets/css/main.css'
   ],
 
-  // Agar support SSR dan Client side dengan baik
-  ssr: true,
+  // SSR false untuk performa optimal di Vercel (SPA mode)
+  ssr: false,
+
+  // Konfigurasi untuk Vercel deployment
+  nitro: {
+    preset: 'vercel'
+  },
+
+  // Runtime config untuk API key (lebih aman)
+  runtimeConfig: {
+    public: {
+      openWeatherApiKey: process.env.NUXT_PUBLIC_OPENWEATHER_API_KEY || ''
+    }
+  },
+
+  app: {
+    head: {
+      title: 'WeatherApp — Cuaca Real-time',
+      meta: [
+        { name: 'description', content: 'Aplikasi cuaca real-time dengan tampilan modern liquid glass' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'theme-color', content: '#0a0f1e' },
+      ],
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+      ]
+    }
+  },
 
   compatibilityDate: '2026-01-28'
 })

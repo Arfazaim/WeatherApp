@@ -1,75 +1,53 @@
-# Nuxt Minimal Starter
+# 🌤️ WeatherApp — Liquid Glass Edition
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Aplikasi cuaca real-time dengan tampilan **Liquid Glass** modern dan background foto dinamis berdasarkan kondisi cuaca.
 
-## Setup
+## ✨ Fitur
+- 🌅 **Background foto dinamis** — berubah sesuai cuaca (cerah, hujan, mendung, salju, dll)
+- 🫧 **Liquid Glass UI** — efek kaca transparan modern dengan backdrop blur
+- 🌡️ **Data cuaca real-time** dari OpenWeatherMap API
+- ⏰ **Prakiraan per jam** dengan grafik temperatur
+- 📅 **Prakiraan 7 hari** dengan probability hujan
+- ☀️ **Arc matahari** dengan posisi real-time (sunrise/sunset)
+- 📱 **Responsive** — mobile, tablet, desktop
 
-Make sure to install dependencies:
+## 🚀 Setup & Deploy
 
+### 1. Install dependencies
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
+### 2. Setup API Key
+Buat file `.env` di root project:
+```env
+NUXT_PUBLIC_OPENWEATHER_API_KEY=api_key_kamu_disini
+```
+> Daftar gratis di [openweathermap.org/api](https://openweathermap.org/api)
 
-Start the development server on `http://localhost:3000`:
-
+### 3. Development
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
-
-Build the application for production:
-
+### 4. Deploy ke Vercel
 ```bash
-# npm
-npm run build
+# Install Vercel CLI
+npm i -g vercel
 
-# pnpm
-pnpm build
+# Deploy
+vercel
 
-# yarn
-yarn build
-
-# bun
-bun run build
+# Atau push ke GitHub dan connect di vercel.com
 ```
 
-Locally preview production build:
+Di Vercel dashboard, tambahkan **Environment Variable**:
+- Key: `NUXT_PUBLIC_OPENWEATHER_API_KEY`
+- Value: API key kamu
 
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## 🛠️ Tech Stack
+- **Nuxt 4** + Vue 3
+- **Tailwind CSS** via `@nuxt/ui`
+- **OpenWeatherMap API** (free tier)
+- **Unsplash** (background photos, no auth needed)
+- **@vercel/analytics** untuk tracking
