@@ -18,6 +18,7 @@ declare const inlineConfig = {
     "fallbackToApi": true,
     "cssSelectorPrefix": "i-",
     "cssWherePseudo": true,
+    "cssLayer": "base",
     "mode": "css",
     "attrs": {
       "aria-hidden": true

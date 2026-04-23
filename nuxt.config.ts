@@ -11,19 +11,23 @@ export default defineNuxtConfig({
     '@vercel/analytics'
   ],
 
+  // TAMBAHKAN INI: Memaksa Nuxt & Nitro memproses iconify
+  build: {
+    transpile: ['@iconify/utils']
+  },
+
+  // Perbaikan untuk Nitro agar menyertakan module ini di serverless function
+  nitro: {
+    preset: 'vercel',
+    moduleSideEffects: ['@iconify/utils']
+  },
+
   css: [
     '~/assets/css/main.css'
   ],
 
-  // SSR false untuk performa optimal di Vercel (SPA mode)
   ssr: false,
 
-  // Konfigurasi untuk Vercel deployment
-  nitro: {
-    preset: 'vercel'
-  },
-
-  // Runtime config untuk API key (lebih aman)
   runtimeConfig: {
     public: {
       openWeatherApiKey: process.env.NUXT_PUBLIC_OPENWEATHER_API_KEY || ''
