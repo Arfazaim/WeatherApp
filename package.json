@@ -10,8 +10,6 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@iconify/types": "^2.0.0",
-    "@iconify/utils": "^2.3.0",
     "@nuxt/ui": "^4.5.1",
     "@vercel/analytics": "^2.0.1",
     "nuxt": "^4.3.0",
@@ -19,7 +17,6 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
-    "@nuxt/icon": "^2.2.1",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@tailwindcss/postcss": "^4.1.18",
     "postcss": "^8.5.6"

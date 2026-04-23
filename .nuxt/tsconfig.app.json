@@ -116,7 +116,7 @@
         "./color-mode-options.mjs"
       ],
       "#app-manifest": [
-        "./manifest/meta/5d7dd8cd-a506-460b-8e24-e09c835b61ba"
+        "./manifest/meta/dev.json"
       ],
       "#components": [
         "./components"
@@ -196,7 +196,7 @@
     "../node_modules/dist/runtime/server",
     "../node_modules/*.*",
     "../node_modules/dist/*.*",
-    "../.vercel/output",
+    "dev",
     "../server"
   ]
 }

@@ -6,28 +6,25 @@ export default defineNuxtConfig({
   srcDir: 'app',
 
   modules: [
-    '@nuxt/icon',
+    // '@nuxt/icon' DIHAPUS — tidak dipakai & menyebabkan ERR_MODULE_NOT_FOUND di Vercel
     '@nuxt/ui',
     '@vercel/analytics'
   ],
-
-  // TAMBAHKAN INI: Memaksa Nuxt & Nitro memproses iconify
-  build: {
-    transpile: ['@iconify/utils']
-  },
-
-  // Perbaikan untuk Nitro agar menyertakan module ini di serverless function
-  nitro: {
-    preset: 'vercel',
-    moduleSideEffects: ['@iconify/utils']
-  },
 
   css: [
     '~/assets/css/main.css'
   ],
 
+  // SPA mode — tidak ada serverless function, deploy sebagai static files
   ssr: false,
 
+  // 'vercel-static' = output statis, TIDAK membuat serverless functions
+  // Cocok karena ssr: false. Pakai 'vercel' hanya jika SSR aktif.
+  nitro: {
+    preset: 'vercel-static'
+  },
+
+  // Runtime config untuk API key (lebih aman)
   runtimeConfig: {
     public: {
       openWeatherApiKey: process.env.NUXT_PUBLIC_OPENWEATHER_API_KEY || ''
