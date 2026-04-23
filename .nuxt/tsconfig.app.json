@@ -13,6 +13,9 @@
       "@vue/compiler-sfc": [
         "../node_modules/@vue/compiler-sfc"
       ],
+      "unplugin-vue-router/client": [
+        "../node_modules/unplugin-vue-router/client"
+      ],
       "@nuxt/schema": [
         "../node_modules/@nuxt/schema"
       ],
@@ -21,12 +24,6 @@
       ],
       "vite/client": [
         "../node_modules/vite/client"
-      ],
-      "@nuxt/fonts": [
-        "../node_modules/@nuxt/fonts"
-      ],
-      "@nuxtjs/color-mode": [
-        "../node_modules/@nuxtjs/color-mode"
       ],
       "nitropack/types": [
         "../node_modules/nitropack/types"
@@ -103,6 +100,9 @@
       "#ui/*": [
         "../node_modules/@nuxt/ui/dist/runtime/*"
       ],
+      "#color-mode-options": [
+        "./color-mode-options.mjs"
+      ],
       "#vue-router": [
         "../node_modules/vue-router"
       ],
@@ -112,11 +112,8 @@
       "#imports": [
         "./imports"
       ],
-      "#color-mode-options": [
-        "./color-mode-options.mjs"
-      ],
       "#app-manifest": [
-        "./manifest/meta/dev.json"
+        "./manifest/meta/6698c26b-e8bb-4bfb-808a-3110578a5db6"
       ],
       "#components": [
         "./components"
@@ -175,12 +172,12 @@
     "../node_modules",
     "../node_modules/nuxt/node_modules",
     "../node_modules/@nuxt/icon/node_modules",
+    "../node_modules/@nuxt/fonts/node_modules",
+    "../node_modules/@nuxtjs/color-mode/node_modules",
     "../node_modules/@nuxt/ui/node_modules",
     "../node_modules/@vercel/analytics/node_modules",
     "../node_modules/@nuxt/devtools/node_modules",
     "../node_modules/@nuxt/telemetry/node_modules",
-    "../node_modules/@nuxt/fonts/node_modules",
-    "../node_modules/@nuxtjs/color-mode/node_modules",
     "../dist",
     "../.data",
     "../modules/*/runtime/server/**/*",
@@ -196,7 +193,7 @@
     "../node_modules/dist/runtime/server",
     "../node_modules/*.*",
     "../node_modules/dist/*.*",
-    "dev",
+    "../.vercel/output",
     "../server"
   ]
 }

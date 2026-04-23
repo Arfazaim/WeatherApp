@@ -19,7 +19,6 @@ export default {
     "leadingIcon": "shrink-0",
     "leadingAvatar": "shrink-0",
     "leadingAvatarSize": "",
-    "files": "flex items-center gap-1.5 mb-1.5",
     "content": "relative text-pretty min-w-0 *:first:mt-0 *:last:mb-0",
     "actions": [
       "opacity-0 group-hover/message:opacity-100 absolute bottom-0 flex items-center",
@@ -45,10 +44,11 @@ export default {
       }
     },
     "side": {
-      "left": {},
+      "left": {
+        "container": "rtl:justify-end"
+      },
       "right": {
-        "container": "justify-end ms-auto max-w-[75%]",
-        "files": "justify-end"
+        "container": "ltr:justify-end ms-auto max-w-[75%]"
       }
     },
     "leading": {
@@ -61,14 +61,12 @@ export default {
       "true": {
         "root": "scroll-mt-3",
         "container": "gap-1.5 pb-3",
-        "content": "space-y-2",
         "leadingIcon": "size-5",
         "leadingAvatarSize": "2xs"
       },
       "false": {
         "root": "scroll-mt-4 sm:scroll-mt-6",
         "container": "gap-3 pb-8",
-        "content": "space-y-4",
         "leadingIcon": "size-8",
         "leadingAvatarSize": "md"
       }

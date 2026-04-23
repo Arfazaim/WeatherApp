@@ -1,4 +1,3 @@
-/// <reference types="@nuxt/icon" />
 /// <reference types="@nuxt/ui" />
 /// <reference types="@vercel/analytics" />
 /// <reference types="@nuxt/devtools" />
