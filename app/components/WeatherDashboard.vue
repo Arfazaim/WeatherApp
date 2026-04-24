@@ -1,12 +1,12 @@
 <script setup>
 // ─── API CONFIG ───────────────────────────────────────────────────────────────
 const apiKey = '49ec4dd2219678b027f91a13c323b469'
-const city = ref('Jakarta')
+const city = ref('Surakarta')
 const searchInput = ref('')
 const isLoading = ref(false)
 
 const weather = ref({
-  name: 'Jakarta',
+  name: 'Surakarta',
   dt: Math.floor(Date.now() / 1000),
   main: { temp: 33, feels_like: 41, humidity: 73, pressure: 1014, temp_max: 36, temp_min: 29 },
   weather: [{ id: 800, main: 'Clear', description: 'Cerah' }],

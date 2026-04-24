@@ -1,33 +1,45 @@
+// nuxt.config.ts
 export default defineNuxtConfig({
+  // Mengaktifkan fitur Nuxt 4 (sesuai struktur folder 'app' kamu)
   future: {
     compatibilityVersion: 4,
   },
 
+  // Memberitahu Nuxt bahwa source code ada di dalam folder 'app'
   srcDir: 'app',
 
   modules: [
     // '@nuxt/icon' DIHAPUS — tidak dipakai & menyebabkan ERR_MODULE_NOT_FOUND di Vercel
     '@nuxt/ui',
-    '@vercel/analytics'
+    '@vercel/analytics' //
   ],
 
   css: [
     '~/assets/css/main.css'
   ],
 
+<<<<<<< Updated upstream
   // SPA mode — tidak ada serverless function, deploy sebagai static files
   ssr: false,
 
   // 'vercel-static' = output statis, TIDAK membuat serverless functions
   // Cocok karena ssr: false. Pakai 'vercel' hanya jika SSR aktif.
+=======
+  // SSR false jika kamu ingin mode SPA murni (lebih ringan untuk free tier Vercel)
+  ssr: false,
+
+  // Konfigurasi untuk Vercel (Auto-detect biasanya sudah cukup)
+>>>>>>> Stashed changes
   nitro: {
     preset: 'vercel-static'
   },
 
-  // Runtime config untuk API key (lebih aman)
+  // --- PERBAIKAN DI SINI ---
+  // Mapping variabel .env ke dalam aplikasi
   runtimeConfig: {
     public: {
-      openWeatherApiKey: process.env.NUXT_PUBLIC_OPENWEATHER_API_KEY || ''
+      // Nuxt akan otomatis mengambil nilai dari NUXT_PUBLIC_WEATHER_API_KEY di .env atau Vercel
+      weatherApiKey: '' 
     }
   },
 
