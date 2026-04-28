@@ -1,9 +1,12 @@
 <script setup>
 // ─── API CONFIG ───────────────────────────────────────────────────────────────
-const apiKey = '49ec4dd2219678b027f91a13c323b469'
-const city = ref('Surakarta')
+// API Key diambil dari environment variable, bukan hardcode
+const config = useRuntimeConfig()
+const apiKey = config.public.weatherApiKey
+const city = ref(config.public.defaultCity || 'Surakarta')
 const searchInput = ref('')
 const isLoading = ref(false)
+const errorMsg = ref('')
 
 const weather = ref({
   name: 'Surakarta',
@@ -16,16 +19,25 @@ const weather = ref({
 })
 
 const fetchWeather = async () => {
-  if (!apiKey) return
+  if (!apiKey) {
+    errorMsg.value = 'API key belum dikonfigurasi. Tambahkan NUXT_PUBLIC_WEATHER_API_KEY di Vercel.'
+    return
+  }
   isLoading.value = true
+  errorMsg.value = ''
   try {
     const res = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&units=metric&appid=${apiKey}&lang=id`
     )
     const data = await res.json()
-    if (data.cod === 200) weather.value = data
+    if (data.cod === 200) {
+      weather.value = data
+    } else {
+      errorMsg.value = data.message || 'Kota tidak ditemukan'
+    }
   } catch (e) {
     console.error('Gagal mengambil data cuaca', e)
+    errorMsg.value = 'Gagal terhubung ke server cuaca'
   } finally {
     isLoading.value = false
   }
@@ -201,6 +213,11 @@ const sunPos = computed(() => {
         </div>
       </header>
 
+      <!-- ERROR BANNER -->
+      <div v-if="errorMsg" class="glass error-banner">
+        ⚠️ {{ errorMsg }}
+      </div>
+
       <!-- GRID -->
       <div class="grid">
 
@@ -348,6 +365,9 @@ const sunPos = computed(() => {
 /* LOADING */
 .loading-bar{position:fixed;top:0;left:0;right:0;height:2px;z-index:9999;background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);background-size:60% 100%;animation:sh 1.4s infinite}
 @keyframes sh{from{background-position:-100% 0}to{background-position:200% 0}}
+
+/* ERROR BANNER */
+.error-banner{padding:12px 20px;border-radius:16px;font-size:13px;color:#fcd34d;border-color:rgba(252,211,77,.3);background:rgba(252,211,77,.08)!important}
 
 /* GLASS */
 .glass{background:rgba(255,255,255,.07);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(255,255,255,.16);border-radius:24px;box-shadow:0 4px 24px rgba(0,0,0,.22),inset 0 1.5px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.12);transition:transform .25s ease,box-shadow .25s ease}

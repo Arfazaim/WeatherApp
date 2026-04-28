@@ -1,4 +1,27 @@
+# Nuxt
 .nuxt/
-node_modules/
-dist/
 .output/
+.cache/
+
+# Vercel build output — JANGAN pernah commit ini!
+.vercel/
+
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+
+# Environment variables — RAHASIA, jangan commit!
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.DS_Store
+.idea/
+.vscode/

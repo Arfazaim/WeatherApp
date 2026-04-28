@@ -15,20 +15,20 @@ export default defineNuxtConfig({
     '~/assets/css/main.css'
   ],
 
-  // SPA mode murni, deploy sebagai file statis
+  // SPA mode — deploy sebagai file statis di Vercel
   ssr: false,
 
   nitro: {
+    // vercel-static = generate file HTML/JS statis, TIDAK ada serverless function
     preset: 'vercel-static',
-    // Memaksa Iconify ikut di-build biar nggak 500 error
-    externals: {
-      inline: ['@iconify/utils']
-    }
   },
 
   runtimeConfig: {
     public: {
-      weatherApiKey: '' 
+      // Set di Vercel Dashboard: Environment Variables
+      // Nama variabel: NUXT_PUBLIC_WEATHER_API_KEY
+      weatherApiKey: '',
+      defaultCity: 'Surakarta',
     }
   },
 
